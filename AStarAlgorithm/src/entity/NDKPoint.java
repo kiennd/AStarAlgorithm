@@ -3,7 +3,7 @@ package entity;
 public class NDKPoint {
 	double x,y;
 	public double distance(NDKPoint pointB){
-		double R = 6371000; // m
+		double R = 6371; // km
 		double dLat = Math.toRadians(x-pointB.x);
 		double dLon = Math.toRadians(y-pointB.y);
 		double lat1 = Math.toRadians(x);

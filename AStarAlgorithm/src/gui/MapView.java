@@ -37,6 +37,10 @@ import entity.Neighborhood;
 import entity.Node;
 import entity.SingletonData;
 
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+
 public class MapView extends JFrame {
 
 	/**
@@ -50,6 +54,7 @@ public class MapView extends JFrame {
 	private JComboBox cbStart, cbDestination;
 	private JTable tblLog;
 	private DefaultTableModel model;
+	private JLabel lblDistance,lblDistanceResult;
 
 	/**
 	 * Launch the application.
@@ -76,7 +81,7 @@ public class MapView extends JFrame {
 
 		this.data = SingletonData.getData();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 904, 751);
+		setBounds(100, 100, 904, 690);
 		contentPane = new DrawPane();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -88,83 +93,12 @@ public class MapView extends JFrame {
 
 		getContentPane().setLayout(null);
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(509, 36, 323, 134);
-		getContentPane().add(scrollPane);
-
-		txtNodeLocation = new JTextArea();
-		scrollPane.setViewportView(txtNodeLocation);
-		txtNodeLocation.setToolTipText("V\u1ECB tr\u00ED c\u00E1c node");
-		txtNodeLocation.setRows(8);
-		txtNodeLocation.setLineWrap(true);
-		txtNodeLocation.setText(data.getMapString().toString());
-
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(509, 206, 323, 266);
-		getContentPane().add(scrollPane_1);
-
-		txtPathInfo = new JTextArea();
-		txtPathInfo.setText(data.getNeighborhoodString().toString());
-		scrollPane_1.setViewportView(txtPathInfo);
-
-		JLabel lblVTrCc = new JLabel("V\u1ECB tr\u00ED c\u00E1c node:");
-		lblVTrCc.setBounds(509, 11, 164, 14);
-		getContentPane().add(lblVTrCc);
-
-		JLabel lblThngTinng = new JLabel(
-				"Th\u00F4ng tin \u0111\u01B0\u1EDDng \u0111i");
-		lblThngTinng.setBounds(507, 181, 166, 14);
-		getContentPane().add(lblThngTinng);
-
-		JButton btnSave = new JButton("save");
-		btnSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String s = txtNodeLocation.getText();
-				System.out.println(s);
-				PrintWriter out;
-				BufferedWriter writer = null;
-				try {
-					writer = new BufferedWriter(new FileWriter("mapInfo.txt"));
-					writer.write(s);
-
-				} catch (IOException e) {
-				} finally {
-					try {
-						if (writer != null)
-							writer.close();
-					} catch (IOException e) {
-					}
-				}
-				
-				String s2 = txtPathInfo.getText();
-				try {
-					writer = new BufferedWriter(new FileWriter("neighborhood.txt"));
-					writer.write(s2);
-
-				} catch (IOException e) {
-				} finally {
-					try {
-						if (writer != null)
-							writer.close();
-					} catch (IOException e) {
-					}
-				}
-				data.reloadData();
-				reloadGUIComponent();
-				repaint();
-				
-
-			}
-		});
-		btnSave.setBounds(743, 483, 89, 23);
-		getContentPane().add(btnSave);
-
 		JLabel lblimu = new JLabel("Start point");
-		lblimu.setBounds(26, 453, 68, 14);
+		lblimu.setBounds(26, 434, 68, 14);
 		getContentPane().add(lblimu);
 
 		JLabel lblimCui = new JLabel("Destination point");
-		lblimCui.setBounds(261, 453, 83, 14);
+		lblimCui.setBounds(261, 434, 128, 14);
 		getContentPane().add(lblimCui);
 
 		JButton btnTmngi = new JButton("Get direction");
@@ -178,27 +112,31 @@ public class MapView extends JFrame {
 				pathAstar = findPath(start, destination);
 				StringBuffer path = new StringBuffer("");
 				path.append(start.getName());
+				
 				for (int i = pathAstar.size() - 1; i >= 0; i--) {
 					Node array_element = pathAstar.get(i);
 					path.append(" -> " + array_element.getName());
+					
 				}
+				
+				lblDistanceResult.setText(destination.getActualCost()+"");
 				txtresult.setText(path.toString());
 				contentPane.repaint();
 			}
 		});
-		btnTmngi.setBounds(84, 483, 112, 23);
+		btnTmngi.setBounds(94, 465, 112, 26);
 		getContentPane().add(btnTmngi);
 
 		cbStart = new JComboBox();
-		cbStart.setBounds(84, 449, 145, 23);
+		cbStart.setBounds(101, 430, 128, 23);
 		getContentPane().add(cbStart);
 
 		cbDestination = new JComboBox();
-		cbDestination.setBounds(354, 449, 145, 23);
+		cbDestination.setBounds(389, 431, 145, 23);
 		getContentPane().add(cbDestination);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(26, 522, 806, 179);
+		scrollPane_2.setBounds(26, 500, 806, 141);
 		getContentPane().add(scrollPane_2);
 
 		tblLog = new JTable();
@@ -219,13 +157,141 @@ public class MapView extends JFrame {
 		tblLog.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		txtresult = new JTextField();
-		txtresult.setBounds(354, 484, 145, 20);
+		txtresult.setBounds(389, 468, 145, 20);
 		getContentPane().add(txtresult);
 		txtresult.setColumns(10);
 
 		JLabel lblResult = new JLabel("Result");
-		lblResult.setBounds(261, 487, 46, 14);
+		lblResult.setBounds(262, 473, 46, 14);
 		getContentPane().add(lblResult);
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(475, 6, 405, 420);
+		getContentPane().add(tabbedPane);
+		
+		JPanel panel = new JPanel();
+		tabbedPane.addTab("Node location", null, panel, null);
+		tabbedPane.setEnabledAt(0, true);
+		panel.setLayout(null);
+				
+				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setBounds(6, 6, 372, 317);
+				panel.add(scrollPane);
+		
+				txtNodeLocation = new JTextArea();
+				scrollPane.setViewportView(txtNodeLocation);
+				txtNodeLocation.setToolTipText("V\u1ECB tr\u00ED c\u00E1c node");
+				txtNodeLocation.setRows(8);
+				txtNodeLocation.setLineWrap(true);
+				txtNodeLocation.setText(data.getMapString().toString());
+				
+						JButton btnSave = new JButton("save");
+						btnSave.setBounds(289, 335, 89, 33);
+						panel.add(btnSave);
+						ActionListener saveAct = new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								String s = txtNodeLocation.getText();
+								System.out.println(s);
+								PrintWriter out;
+								BufferedWriter writer = null;
+								try {
+									writer = new BufferedWriter(new FileWriter("mapInfo.txt"));
+									writer.write(s);
+
+								} catch (IOException e) {
+								} finally {
+									try {
+										if (writer != null)
+											writer.close();
+									} catch (IOException e) {
+									}
+								}
+								
+								String s2 = txtPathInfo.getText();
+								try {
+									writer = new BufferedWriter(new FileWriter("neighborhood.txt"));
+									writer.write(s2);
+
+								} catch (IOException e) {
+								} finally {
+									try {
+										if (writer != null)
+											writer.close();
+									} catch (IOException e) {
+									}
+								}
+								data.reloadData();
+								reloadGUIComponent();
+								repaint();
+								
+
+							}
+						};
+						btnSave.addActionListener(saveAct);
+		
+		JPanel panel_1 = new JPanel();
+		tabbedPane.addTab("Path Info", null, panel_1, null);
+		tabbedPane.setEnabledAt(1, true);
+		panel_1.setLayout(null);
+				
+				JScrollPane scrollPane_1 = new JScrollPane();
+				scrollPane_1.setBounds(6, 6, 372, 319);
+				panel_1.add(scrollPane_1);
+		
+				txtPathInfo = new JTextArea();
+				scrollPane_1.setViewportView(txtPathInfo);
+				txtPathInfo.setText(data.getNeighborhoodString().toString());
+				
+				JButton btnSave_1 = new JButton("save");
+				btnSave_1.setBounds(289, 337, 89, 33);
+				panel_1.add(btnSave_1);
+				btnSave_1.addActionListener(saveAct);
+				
+		JPanel panel_2 = new JPanel();
+		tabbedPane.addTab("Heuristic", null, panel_2, null);
+		tabbedPane.setEnabledAt(2, true);
+		panel_2.setLayout(null);
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		scrollPane_3.setBounds(6, 6, 372, 362);
+		panel_2.add(scrollPane_3);
+		
+		JTextArea txtHeuristic = new JTextArea();
+		txtHeuristic.setEditable(false);
+		scrollPane_3.setViewportView(txtHeuristic);
+		
+		StringBuffer heuristicInfo = new StringBuffer("");
+		for (int i = 0; i < data.getMapInfo().size(); i++) {
+			Node nodei = data.getMapInfo().get(i);
+			for (int j = 0; j < data.getMapInfo().size(); j++) {
+				Node nodej = data.getMapInfo().get(j);
+				heuristicInfo.append(String.format("%,.2f", nodei.getLocation().distance(
+						nodej.getLocation()))
+						+ " ");
+			}
+			heuristicInfo.append("\n");
+		}
+		txtHeuristic.setText(heuristicInfo.toString());
+		
+		 lblDistance = new JLabel("Distance:");
+		lblDistance.setBounds(595, 470, 83, 16);
+		getContentPane().add(lblDistance);
+		
+		 lblDistanceResult = new JLabel("");
+		lblDistanceResult.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDistanceResult.setBounds(659, 468, 100, 23);
+		getContentPane().add(lblDistanceResult);
+		
+		JLabel lblM = new JLabel("km");
+		lblM.setBounds(771, 469, 61, 16);
+		getContentPane().add(lblM);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel_3.setBounds(16, 422, 847, 226);
+		getContentPane().add(panel_3);
 		tblLog.getColumnModel().getColumn(0).setPreferredWidth(40);
 		tblLog.getColumnModel().getColumn(1).setPreferredWidth(180);
 		tblLog.getColumnModel().getColumn(2).setPreferredWidth(300);
@@ -236,6 +302,7 @@ public class MapView extends JFrame {
 		// drawAxis();
 
 		reloadGUIComponent();
+		
 
 	}
 	

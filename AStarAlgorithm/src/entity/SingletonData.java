@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class SingletonData {
 	private ArrayList<Node> mapInfo;
@@ -12,7 +11,6 @@ public class SingletonData {
 	private NDKPoint axisLocation;
 	private long NDKMax; // max of all cordinate content;
 	private double ratio; // ratio between real cordinate value vs map value
-	private Vector<LogEntity> logData;
 	private StringBuffer mapString;
 	private StringBuffer neighborhoodString;
 	
@@ -20,7 +18,6 @@ public class SingletonData {
 		mapInfo = new ArrayList<>();
 		axisLocation = new NDKPoint(20.939951, 105.772934);
 		ratio = 4000;
-		logData = new Vector<>();
 		mapString = new StringBuffer("");
 		neighborhoodString =  new StringBuffer("");
 		reloadData();
@@ -73,7 +70,7 @@ public class SingletonData {
 				Node curNode1 = mapInfo.get(i);
 				for (int j = 0; j < lineContent.length; j++) {
 					String s = lineContent[j];
-					if (!s.equalsIgnoreCase("0")) {
+					if (!s.equalsIgnoreCase("0")&&!s.equalsIgnoreCase("-1")) {
 						Neighborhood neighborhood = new Neighborhood();
 						neighborhood.setId(j);
 						neighborhood.setLength(Double.parseDouble(s));
@@ -119,19 +116,6 @@ public class SingletonData {
 	public void setNeighborhoodString(StringBuffer neighborhoodString) {
 		this.neighborhoodString = neighborhoodString;
 	}
-
-
-
-	public Vector<LogEntity> getLogData() {
-		return logData;
-	}
-
-
-
-	public void setLogData(Vector<LogEntity> logData) {
-		this.logData = logData;
-	}
-
 
 
 	public void addNode(Node node) {
